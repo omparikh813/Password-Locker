@@ -1,0 +1,5 @@
+.DS_Store
+Templates not in use/
+__pycache__/
+components/
+key.key
