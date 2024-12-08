@@ -1,6 +1,6 @@
 
 import mysql.connector
-from flask import Flask, render_template, request, url_for, flash, redirect
+from flask import Flask, render_template, request, url_for, flash, redirect, session
 from email.message import EmailMessage
 #from cryptography.fernet import Fernet
 #from getpass import getpass
@@ -35,10 +35,12 @@ def home():
 def login():
     #hide.decryptor()
     if request.method == 'POST':
-        global username
-        global password
         username = request.form['username']
         password = request.form['password']
+
+        #Allows access throughout the request
+        session['username'] = username
+        session['password'] = password
 
         if not username or not password:
             flash('Please enter valid information!')
@@ -46,12 +48,19 @@ def login():
             conn = get_db_connection()
             cur = conn.cursor()
 
+            #Verifies Account
             cur.execute('SELECT * FROM users WHERE username = %s AND password = %s', (username, password,))
             data = cur.fetchone()
 
             if data:
-                global email
                 email = list(data)[3]
+                id = list(data)[0]
+
+                #Allows access throughout the request
+                session['email'] = email
+                session['id'] = id
+            
+
                 sender_email = 'omisdummy@gmail.com'
                 sender_pass = os.environ.get("EMAIL_PASSWORD")
 
@@ -114,8 +123,22 @@ def two_factor():
     if request.method == 'POST':
         if int(request.form['code']) == code:
             #RETURN TO ACCOUNT PAGE
-            return redirect(url_for('home'))
+            return redirect(url_for('pass_list'))
         else:
             flash('Incorrect code, please try again!')
     
     return render_template('2FA.html')
+
+#Page for accessing passwords
+@app.route('/pass_list')
+def pass_list():
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+
+    cur.execute(
+            'SELECT application, pass FROM users INNER JOIN user_applications ON users.id = user_applications.user_id WHERE username = %s', (session['username'],))
+    rows = cur.fetchall()
+    conn.close()
+
+    return render_template('pass_list.html', rows=rows)
+

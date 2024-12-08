@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Locked Passwords: {% endblock %}</h1>
+    {% for row in rows %}
+        <a href="#">
+            <h2>{{ row['application'] }}</h2>
+        </a>
+        <span class="badge badge-primary">{{ row['pass'] }}</span>
+        <button type="button" onclick="row['pass']">Show Password</button>
+        <hr>
+    {% endfor %}
+{% endblock %}
