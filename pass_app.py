@@ -9,7 +9,7 @@ import ssl
 import smtplib
 import sys
 
-#Creates recurring connection
+# Creates recurring connection
 def get_db_connection():
     conn = mysql.connector.connect(
         host='localhost',
@@ -20,50 +20,54 @@ def get_db_connection():
     )
     return conn
 
-#Configures application
+# Configures application
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secretkey'
 
-#Home Page
+# Home Page
 @app.route('/')
 def home():
     return render_template('home.html')
 
-#Login Page
+# Login Page
 @app.route('/login', methods=('GET', 'POST'))
 def login():
     #hide.decryptor()
+
+    # Retrieves username and password from website form
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
 
-        #Allows access throughout the request
+        # Allows access to variables throughout the session
         session['username'] = username
         session['password'] = password
 
+        # Checks valid input
         if not username or not password:
             flash('Please enter valid information!')
         else:
             conn = get_db_connection()
             cur = conn.cursor()
 
-            #Verifies Account
+            # Verifies Account
             cur.execute('SELECT * FROM users WHERE username = %s AND password = %s', (username, password,))
             data = cur.fetchone()
 
             if data:
+                # Saved for later use
                 email = list(data)[3]
                 id = list(data)[0]
 
-                #Allows access throughout the request
+                # Allows access throughout the request
                 session['email'] = email
                 session['id'] = id
             
-
+                # Email Accociates
                 sender_email = 'omisdummy@gmail.com'
                 sender_pass = os.environ.get("EMAIL_PASSWORD")
 
-                #Email characteristics
+                # Email characteristics
                 global code
                 code = random.randint(100000, 999999)
                 subject = 'Two-Step Veriification code'
@@ -75,7 +79,7 @@ def login():
                 em['Subject'] = subject
                 em.set_content(body)
 
-                #sends email securely through ssl
+                # Sends email securely through ssl
                 context = ssl.create_default_context()
                 with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
                     smtp.login(sender_email, sender_pass)
@@ -83,16 +87,18 @@ def login():
                 
                 conn.close()
 
-                #Redirect to 2FA page
+                # Redirect to 2FA page after initial login
                 return redirect(url_for('two_factor'))
             else:
                 flash('Username or password is incorrect! Please try again or create an account!')
 
+    # Returns webpage from GET request
     return render_template('login.html')
 
-#New account creation
+#N ew account creation page
 @app.route('/login/new_account', methods=('GET', 'POST'))
 def new_account():
+    # Retrieves username, password, and email from website form
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -103,29 +109,36 @@ def new_account():
 
         cur.execute('SELECT * FROM users WHERE username = %s', (username,))
 
+        # Checks valid input
         if not username or not password or not email:
             flash('Please enter valid information!')
+        # Verifies that the inputted username is not already in use
         elif cur.fetchone():
             flash('An account with this username already exists!')
+        # Adds new user to database
         else:
             cur.execute('INSERT INTO users (username, password, email) VALUES (%s, %s, %s)', (username, password, email,))
             conn.commit()
             conn.close()
 
+            # Redirect to login page for new user to login
             return redirect(url_for('login'))
-
+    
+    # Returns webpage from GET request
     return render_template('new_account.html')
 
-#Page for two factor authentication
+# Page for two factor authentication
 @app.route('/login/2fa', methods=('GET', 'POST'))
 def two_factor():
+    # Retrieves 2FA code from form
     if request.method == 'POST':
+        # Logs user in if code is correct
         if int(request.form['code']) == code:
-            #RETURN TO ACCOUNT PAGE
             return redirect(url_for('pass_list'))
         else:
             flash('Incorrect code, please try again!')
     
+    # Returns webpage from GET request
     return render_template('2FA.html')
 
 #Page for accessing passwords
@@ -134,16 +147,19 @@ def pass_list():
     conn = get_db_connection()
     cur = conn.cursor(dictionary=True)
 
+    # Retrieves all of the user's passwords to be displayed on the webpage
     cur.execute(
             'SELECT application, pass FROM users INNER JOIN user_applications ON users.id = user_applications.user_id WHERE username = %s', (session['username'],))
     rows = cur.fetchall()
     conn.close()
 
+    # Returns webpage from GET request
     return render_template('pass_list.html', rows=rows)
 
-#Page to add passwords
+# Page to add passwords
 @app.route('/pass_list/add_password', methods=('GET', 'POST'))
 def add_password():
+    # Retrieves application name and password from form
     if request.method == 'POST':
         application = request.form['application']
         password = request.form['user_pass']
@@ -151,11 +167,14 @@ def add_password():
         conn = get_db_connection()
         cur = conn.cursor()
 
+        # Adds inputted login pair to database with the user's unique id
         cur.execute('INSERT INTO user_applications (application, pass, user_id) VALUES (%s, %s, %s)', (application, password, session['id'],))
         conn.commit()
         conn.close()
 
+        # Redirects to password list after adding a new login
         return redirect(url_for('pass_list'))
 
+    # Returns webpage from GET request
     return render_template('add_password.html')
 
