@@ -3,7 +3,6 @@ import mysql.connector
 from flask import Flask, render_template, request, url_for, flash, redirect, session
 from email.message import EmailMessage
 #from cryptography.fernet import Fernet
-#from getpass import getpass
 import os
 import random
 import ssl
@@ -141,4 +140,22 @@ def pass_list():
     conn.close()
 
     return render_template('pass_list.html', rows=rows)
+
+#Page to add passwords
+@app.route('/pass_list/add_password', methods=('GET', 'POST'))
+def add_password():
+    if request.method == 'POST':
+        application = request.form['application']
+        password = request.form['user_pass']
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        cur.execute('INSERT INTO user_applications (application, pass, user_id) VALUES (%s, %s, %s)', (application, password, session['id'],))
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for('pass_list'))
+
+    return render_template('add_password.html')
 
