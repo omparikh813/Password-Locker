@@ -174,10 +174,14 @@ def pass_list():
 
 
 
-#Page to display an application
+# Page to display an application
 @app.route('/pass_list/<int:login_id>')
 def app_display(login_id):
+
+    # Retrives information for a application login pair
     login = get_login(login_id)
+
+    # Verifies logged in user to prevent browser directory
     if login['user_id'] == session['id']:
         return render_template('app_display.html', login=login)
     else:
@@ -210,26 +214,33 @@ def add_password():
     # Returns webpage from GET request
     return render_template('add_password.html')
 
+# Page to edit application login pairs
 @app.route('/pass_list/<int:login_id>/edit', methods=('GET', 'POST'))
 def edit(login_id):
+
+    # Retrives information for a application login pair
     login = get_login(login_id)
     
     if request.method == 'POST':
         application = request.form['application']
         password = request.form['password']
 
+        # Checks valid input
         if not application:
             flash('Please enter valid information!')
         else:
             conn = get_db_connection()
             cur = conn.cursor(dictionary=True)
 
+            # Updates the database with changed login application pair
             cur.execute('UPDATE user_applications SET application = %s, pass = %s WHERE id = %s', (application, password, login_id,))
             conn.commit()
             conn.close()
-
+ 
+            # Redirects to password list after adding a new login
             return redirect(url_for('pass_list'))
 
+    # Verifies logged in user to prevent browser directory
     if login['user_id'] == session['id']:
         return render_template('edit.html', login=login)
     else:
@@ -237,14 +248,18 @@ def edit(login_id):
 
 @app.route('/pass_list/<int:login_id>/delete', methods=('POST',))
 def delete(login_id):
+
+    # Retrives information for a application login pair
     login = get_login(login_id)
     
     conn = get_db_connection()
     cur = conn.cursor()
 
+    # Deletes row of database containing the selected application login
     cur.execute('DELETE FROM user_applications WHERE id = %s AND user_id = %s', (login_id, session['id'],))
     conn.commit()
     conn.close()
-
     flash('"{}" was successfully deleted!'.format(login['application']))
+
+    # Redirects to password list after deletion
     return redirect(url_for('pass_list'))
