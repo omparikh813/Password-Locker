@@ -2,6 +2,7 @@
 import mysql.connector
 from flask import Flask, render_template, request, url_for, flash, redirect, session
 from email.message import EmailMessage
+from werkzeug.exceptions import abort
 #from cryptography.fernet import Fernet
 import os
 import random
@@ -19,6 +20,21 @@ def get_db_connection():
         buffered=True
     )
     return conn
+
+# Finds post for management
+def get_login(login_id):
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+
+    # Retrives post from database
+    cur.execute('SELECT * FROM user_applications WHERE id = %s', (login_id,))
+    login = cur.fetchone()
+    conn.close()
+
+    # Returns post if found
+    if login is None:
+        abort(404)
+    return login
 
 # Configures application
 app = Flask(__name__)
@@ -149,12 +165,24 @@ def pass_list():
 
     # Retrieves all of the user's passwords to be displayed on the webpage
     cur.execute(
-            'SELECT application, pass FROM users INNER JOIN user_applications ON users.id = user_applications.user_id WHERE username = %s', (session['username'],))
+            'SELECT user_applications.id, application, pass FROM users INNER JOIN user_applications ON users.id = user_applications.user_id WHERE username = %s', (session['username'],))
     rows = cur.fetchall()
     conn.close()
 
     # Returns webpage from GET request
     return render_template('pass_list.html', rows=rows)
+
+
+
+#Page to display an application
+@app.route('/pass_list/<int:login_id>')
+def app_display(login_id):
+    login = get_login(login_id)
+    if login['user_id'] == session['id']:
+        return render_template('app_display.html', login=login)
+    else:
+        abort(404)
+
 
 # Page to add passwords
 @app.route('/pass_list/add_password', methods=('GET', 'POST'))
@@ -164,13 +192,17 @@ def add_password():
         application = request.form['application']
         password = request.form['user_pass']
 
-        conn = get_db_connection()
-        cur = conn.cursor()
+        # Checks valid input
+        if not application:
+            flash('Please enter valid information!')
+        else:
+            conn = get_db_connection()
+            cur = conn.cursor()
 
-        # Adds inputted login pair to database with the user's unique id
-        cur.execute('INSERT INTO user_applications (application, pass, user_id) VALUES (%s, %s, %s)', (application, password, session['id'],))
-        conn.commit()
-        conn.close()
+            # Adds inputted login pair to database with the user's unique id
+            cur.execute('INSERT INTO user_applications (application, pass, user_id) VALUES (%s, %s, %s)', (application, password, session['id'],))
+            conn.commit()
+            conn.close()
 
         # Redirects to password list after adding a new login
         return redirect(url_for('pass_list'))
@@ -178,3 +210,29 @@ def add_password():
     # Returns webpage from GET request
     return render_template('add_password.html')
 
+@app.route('/pass_list/<int:login_id>/edit', methods=('GET', 'POST'))
+def edit(login_id):
+    login = get_login(login_id)
+    
+    if request.method == 'POST':
+        application = request.form['application']
+        password = request.form['password']
+
+        if not application:
+            flash('Please enter valid information!')
+        else:
+            conn = get_db_connection()
+            cur = conn.cursor(dictionary=True)
+
+            cur.execute('UPDATE user_applications SET application = %s, pass = %s WHERE id = %s', (application, password, login_id,))
+            conn.commit()
+            conn.close()
+
+            return redirect(url_for('pass_list'))
+
+    if login['user_id'] == session['id']:
+        return render_template('edit.html', login=login)
+    else:
+        abort(404)
+
+@app.route('/pass_list/<int:login_id>/delete/')

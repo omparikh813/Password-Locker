@@ -1,0 +1,6 @@
+{% extends 'logged_base.html' %}
+
+{% block content %}
+    <h2>{% block title %} {{ login['application'] }} {% endblock %}</h2>
+    <span class="badge badge-primary">{{ login['pass'] }}</span>
+{% endblock %}

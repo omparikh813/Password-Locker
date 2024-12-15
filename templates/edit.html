@@ -1,0 +1,26 @@
+{% extends 'logged_base.html' %}
+
+{% block content %}
+<h1>{% block title %} Edit "{{ login['application'] }}" {% endblock %}</h1>
+
+<form method="post">
+    <div class="form-group">
+        <label for="application">Application</label>
+        <input type="text" name="application" placeholder="Application Name"
+               class="form-control"
+               value="{{ request.form['application'] or login['application'] }}">
+        </input>
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password</label>
+        <textarea name="password" placeholder="App Password"
+                  class="form-control">{{ request.form['password'] or login['pass'] }}</textarea>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>
+<hr>
+
+{% endblock %}
