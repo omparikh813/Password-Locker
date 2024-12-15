@@ -235,4 +235,16 @@ def edit(login_id):
     else:
         abort(404)
 
-@app.route('/pass_list/<int:login_id>/delete/')
+@app.route('/pass_list/<int:login_id>/delete', methods=('POST',))
+def delete(login_id):
+    login = get_login(login_id)
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    cur.execute('DELETE FROM user_applications WHERE id = %s AND user_id = %s', (login_id, session['id'],))
+    conn.commit()
+    conn.close()
+
+    flash('"{}" was successfully deleted!'.format(login['application']))
+    return redirect(url_for('pass_list'))
