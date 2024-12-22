@@ -3,7 +3,8 @@ import mysql.connector
 from flask import Flask, render_template, request, url_for, flash, redirect, session
 from email.message import EmailMessage
 from werkzeug.exceptions import abort
-#from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet
+import hide
 import os
 import random
 import ssl

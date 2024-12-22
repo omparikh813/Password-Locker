@@ -3,14 +3,15 @@
 {% block content %}
     <h1>{% block title %} Locked Passwords: {% endblock %}</h1>
     {% for row in rows %}
-        <a href="{{ url_for('app_display', login_id=row['id']) }}">
-            <h2>{{ row['application'] }}</h2>
-        </a>
-        <!-- <span class="badge badge-primary">{{ row['pass'] }}</span> -->
-        <button type="button" onclick="row['pass']">Show Password</button>
+
+        <h2>{{ row['application'] }}</h2>
+        
+        <form action="{{ url_for('app_display', login_id=row['id']) }}">
+            <button class="badge badge-primary" type="submit"> Show Password </button>
+        </form>
 
          <a href="{{ url_for('edit', login_id=row['id']) }}">
-            <span class="'badge badge-warning">Edit</span>
+            <span class="badge badge-warning">Edit</span>
          </a>
 
         <hr>
