@@ -24,6 +24,8 @@ def get_db_connection():
 
 # Finds post for management
 def get_login(login_id):
+    hide.decryptor()
+
     conn = get_db_connection()
     cur = conn.cursor(dictionary=True)
 
@@ -37,6 +39,8 @@ def get_login(login_id):
         abort(404)
     return login
 
+    hide.encryptor()
+
 # Configures application
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secretkey'
@@ -49,10 +53,11 @@ def home():
 # Login Page
 @app.route('/login', methods=('GET', 'POST'))
 def login():
-    #hide.decryptor()
 
     # Retrieves username and password from website form
     if request.method == 'POST':
+        hide.decryptor()
+
         username = request.form['username']
         password = request.form['password']
 
@@ -70,6 +75,8 @@ def login():
             # Verifies Account
             cur.execute('SELECT * FROM users WHERE username = %s AND password = %s', (username, password,))
             data = cur.fetchone()
+
+            hide.encryptor()
 
             if data:
                 # Saved for later use
@@ -117,6 +124,8 @@ def login():
 def new_account():
     # Retrieves username, password, and email from website form
     if request.method == 'POST':
+        #hide.decryptor()
+
         username = request.form['username']
         password = request.form['password']
         email = request.form['email']
@@ -136,11 +145,13 @@ def new_account():
         else:
             cur.execute('INSERT INTO users (username, password, email) VALUES (%s, %s, %s)', (username, password, email,))
             conn.commit()
-            conn.close()
 
+            #hide.encryptor()
+            conn.close()
+        
             # Redirect to login page for new user to login
             return redirect(url_for('login'))
-    
+        
     # Returns webpage from GET request
     return render_template('new_account.html')
 

@@ -3,3 +3,4 @@ Templates not in use/
 __pycache__/
 components/
 key.key
+database_tester.py
