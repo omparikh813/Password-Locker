@@ -1,5 +1,5 @@
 # Local-Lock
-Password manager stored locally.
+Password manager web application that stores your passwords in a safe space.
 
 A personal password manager can be beneficial toward your security. 
 
