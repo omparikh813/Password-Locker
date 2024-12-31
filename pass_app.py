@@ -24,6 +24,8 @@ def get_db_connection():
 
 # Finds post for management
 def get_login(login_id):
+
+    # Decrypts database for searching
     hide.decryptor()
 
     conn = get_db_connection()
@@ -32,6 +34,9 @@ def get_login(login_id):
     # Retrives post from database
     cur.execute('SELECT * FROM user_applications WHERE id = %s', (login_id,))
     login = cur.fetchone()
+
+    # Encrypts database when data is found
+    hide.encryptor()
     conn.close()
 
     # Returns post if found
@@ -39,7 +44,6 @@ def get_login(login_id):
         abort(404)
     return login
 
-    hide.encryptor()
 
 # Configures application
 app = Flask(__name__)
@@ -56,6 +60,7 @@ def login():
 
     # Retrieves username and password from website form
     if request.method == 'POST':
+        # Decrypts database for searching
         hide.decryptor()
 
         username = request.form['username']
@@ -76,7 +81,9 @@ def login():
             cur.execute('SELECT * FROM users WHERE username = %s AND password = %s', (username, password,))
             data = cur.fetchone()
 
+            # Encrypts database when data is found
             hide.encryptor()
+            conn.close()
 
             if data:
                 # Saved for later use
@@ -108,8 +115,6 @@ def login():
                 with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as smtp:
                     smtp.login(sender_email, sender_pass)
                     smtp.sendmail(sender_email, email, em.as_string())
-                
-                conn.close()
 
                 # Redirect to 2FA page after initial login
                 return redirect(url_for('two_factor'))
@@ -119,12 +124,13 @@ def login():
     # Returns webpage from GET request
     return render_template('login.html')
 
-#N ew account creation page
+# New account creation page
 @app.route('/login/new_account', methods=('GET', 'POST'))
 def new_account():
     # Retrieves username, password, and email from website form
     if request.method == 'POST':
-        #hide.decryptor()
+        # Decrypts database for searching
+        hide.decryptor()
 
         username = request.form['username']
         password = request.form['password']
@@ -146,7 +152,8 @@ def new_account():
             cur.execute('INSERT INTO users (username, password, email) VALUES (%s, %s, %s)', (username, password, email,))
             conn.commit()
 
-            #hide.encryptor()
+            # Encrypts database when data is found
+            hide.encryptor()
             conn.close()
         
             # Redirect to login page for new user to login
@@ -172,6 +179,9 @@ def two_factor():
 #Page for accessing passwords
 @app.route('/pass_list')
 def pass_list():
+    # Decrypts database for searching
+    hide.decryptor()
+
     conn = get_db_connection()
     cur = conn.cursor(dictionary=True)
 
@@ -179,6 +189,9 @@ def pass_list():
     cur.execute(
             'SELECT user_applications.id, application, pass FROM users INNER JOIN user_applications ON users.id = user_applications.user_id WHERE username = %s', (session['username'],))
     rows = cur.fetchall()
+
+    # Encrypts database when data is found
+    hide.encryptor()
     conn.close()
 
     # Returns webpage from GET request
@@ -205,6 +218,9 @@ def app_display(login_id):
 def add_password():
     # Retrieves application name and password from form
     if request.method == 'POST':
+        # Decrypts database for searching
+        hide.decryptor()
+
         application = request.form['application']
         password = request.form['user_pass']
 
@@ -218,10 +234,13 @@ def add_password():
             # Adds inputted login pair to database with the user's unique id
             cur.execute('INSERT INTO user_applications (application, pass, user_id) VALUES (%s, %s, %s)', (application, password, session['id'],))
             conn.commit()
+            
+            # Encrypts database when data is found
+            hide.encryptor()
             conn.close()
 
-        # Redirects to password list after adding a new login
-        return redirect(url_for('pass_list'))
+            # Redirects to password list after adding a new login
+            return redirect(url_for('pass_list'))
 
     # Returns webpage from GET request
     return render_template('add_password.html')
@@ -234,6 +253,9 @@ def edit(login_id):
     login = get_login(login_id)
     
     if request.method == 'POST':
+        # Decrypts database for searching
+        hide.decryptor()
+
         application = request.form['application']
         password = request.form['password']
 
@@ -247,6 +269,9 @@ def edit(login_id):
             # Updates the database with changed login application pair
             cur.execute('UPDATE user_applications SET application = %s, pass = %s WHERE id = %s', (application, password, login_id,))
             conn.commit()
+
+            # Encrypts database when data is found
+            hide.encryptor()
             conn.close()
  
             # Redirects to password list after adding a new login
@@ -258,6 +283,7 @@ def edit(login_id):
     else:
         abort(404)
 
+# Button to delete login pairs
 @app.route('/pass_list/<int:login_id>/delete', methods=('POST',))
 def delete(login_id):
 
@@ -266,10 +292,16 @@ def delete(login_id):
     
     conn = get_db_connection()
     cur = conn.cursor()
+    
+    # Decrypts database for searching
+    #hide.decryptor()
 
     # Deletes row of database containing the selected application login
     cur.execute('DELETE FROM user_applications WHERE id = %s AND user_id = %s', (login_id, session['id'],))
     conn.commit()
+
+    # Encrypts database when data is found
+    #hide.encryptor()
     conn.close()
     flash('"{}" was successfully deleted!'.format(login['application']))
 
