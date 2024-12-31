@@ -292,17 +292,12 @@ def delete(login_id):
     
     conn = get_db_connection()
     cur = conn.cursor()
-    
-    # Decrypts database for searching
-    #hide.decryptor()
 
     # Deletes row of database containing the selected application login
     cur.execute('DELETE FROM user_applications WHERE id = %s AND user_id = %s', (login_id, session['id'],))
     conn.commit()
-
-    # Encrypts database when data is found
-    #hide.encryptor()
     conn.close()
+    
     flash('"{}" was successfully deleted!'.format(login['application']))
 
     # Redirects to password list after deletion
