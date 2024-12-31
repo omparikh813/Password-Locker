@@ -15,8 +15,8 @@ import sys
 def get_db_connection():
     conn = mysql.connector.connect(
         host='localhost',
-        user='root',
-        password='root1234',
+        user=os.environ.get("MYSQL_USER"),
+        password=os.environ.get("MYSQL_PASS"),
         database='password_application',
         buffered=True
     )
