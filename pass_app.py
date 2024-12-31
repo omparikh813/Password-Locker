@@ -47,7 +47,7 @@ def get_login(login_id):
 
 # Configures application
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secretkey'
+app.config['SECRET_KEY'] = os.environ.get("FLASK_SECRET_KEY")
 
 # Home Page
 @app.route('/')
@@ -95,7 +95,7 @@ def login():
                 session['id'] = id
             
                 # Email Accociates
-                sender_email = 'omisdummy@gmail.com'
+                sender_email = 'local.lock.app@gmail.com'
                 sender_pass = os.environ.get("EMAIL_PASSWORD")
 
                 # Email characteristics
