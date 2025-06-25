@@ -277,7 +277,7 @@ def edit(login_id):
             # Redirects to password list after adding a new login
             return redirect(url_for('pass_list'))
 
-    # Verifies logged in user to prevent browser directory
+    # Verifies logged in user to prevent directory browsing
     if login['user_id'] == session['id']:
         return render_template('edit.html', login=login)
     else:

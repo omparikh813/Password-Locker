@@ -2,6 +2,7 @@
 
 import mysql.connector
 from cryptography.fernet import Fernet
+import os
 
 #Connects to database
 conn = mysql.connector.connect(
