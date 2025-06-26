@@ -1,12 +1,15 @@
-# Local-Lock
-Password manager web application that stores your passwords in a safe space.
+# Password-Locker
+🔐 Password Locker
+Password Locker is a secure, Python-based password manager web application built with Flask. It stores user credentials with several safeguards to protect users and their data.
 
-A personal password manager can be beneficial toward your security. 
+⚙️ Key Features
+Database Encryption: All stored passwords are encrypted to prevent unauthorized access, even if the database is compromised.
 
-Some password managers do not secure your passwords, leaving your data vulnerable to cyber attacks.
+Two-Factor Authentication: Provides additional login protection to ensure only authorized users can access their passwords.
 
-Encryption is utilized in this program to ensure that threat actors cannot access your data, even with a malware attack. 
+Session Cookies: Utilizes a session ID to prevent directory browsing and session hijacking.
 
-Encrypted data cannot be decrypted without the specific key.
 
-By using this password manager, you keep your passwords in a more secure environment than popular password managing applications.
+🔒 Why Use Password Locker?
+Most commercial password managers are attractive targets for hackers as they may not internal security measures like encryption. Password Locker prioritizes security, privacy, and data integrity to protects all its users from cyber threats.
+
