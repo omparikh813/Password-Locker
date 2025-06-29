@@ -1,0 +1,40 @@
+{% extends 'logged_base.html' %}
+
+{% block content %}
+    <h1 class="text-3xl font-bold text-blue-400 mb-8">{% block title %} Locked Passwords: {% endblock %}</h1>
+
+    <div class="space-y-6"> {# Container to add spacing between password entry cards #}
+        {% for row in rows %}
+            <div class="bg-gray-800 p-6 rounded-lg shadow-xl border border-gray-700
+                        flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                
+                {# Application Title #}
+                <h2 class="text-xl sm:text-2xl font-bold text-gray-100 flex-grow text-center sm:text-left break-words">
+                    {{ row['application'] }}
+                </h2>
+                
+                {# Buttons Container #}
+                <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0 w-full sm:w-auto">
+                    
+                    {# Show Password Button #}
+                    <form action="{{ url_for('app_display', login_id=row['id']) }}" method="get" class="w-full sm:w-auto">
+                        <button type="submit"
+                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md
+                                       transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800">
+                            Show Password
+                        </button>
+                    </form>
+
+                    {# Edit Button #}
+                    <a href="{{ url_for('edit', login_id=row['id']) }}"
+                       class="bg-gray-700 hover:bg-gray-600 text-blue-400 font-semibold py-2 px-4 rounded-md
+                       flex items-center justify-center {# These classes ensure perfect vertical and horizontal centering #}
+                       transition-colors duration-200 border border-blue-500 hover:border-blue-400
+                       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800">
+                        Edit
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

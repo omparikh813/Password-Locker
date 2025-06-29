@@ -169,7 +169,7 @@ def two_factor():
     if request.method == 'POST':
         # Logs user in if code is correct
         if int(request.form['code']) == code:
-            return redirect(url_for('pass_list'))
+            return redirect(url_for('dashboard'))
         else:
             flash('Incorrect code, please try again!')
     
@@ -177,8 +177,8 @@ def two_factor():
     return render_template('2FA.html')
 
 #Page for accessing passwords
-@app.route('/pass_list')
-def pass_list():
+@app.route('/dashboard')
+def dashboard():
     # Decrypts database for searching
     hide.decryptor()
 
@@ -195,12 +195,12 @@ def pass_list():
     conn.close()
 
     # Returns webpage from GET request
-    return render_template('pass_list.html', rows=rows)
+    return render_template('dashboard.html', rows=rows)
 
 
 
 # Page to display an application
-@app.route('/pass_list/<int:login_id>')
+@app.route('/dashboard/<int:login_id>')
 def app_display(login_id):
 
     # Retrives information for a application login pair
@@ -214,7 +214,7 @@ def app_display(login_id):
 
 
 # Page to add passwords
-@app.route('/pass_list/add_password', methods=('GET', 'POST'))
+@app.route('/dashboard/add_password', methods=('GET', 'POST'))
 def add_password():
     # Retrieves application name and password from form
     if request.method == 'POST':
@@ -240,13 +240,13 @@ def add_password():
             conn.close()
 
             # Redirects to password list after adding a new login
-            return redirect(url_for('pass_list'))
+            return redirect(url_for('dashboard'))
 
     # Returns webpage from GET request
     return render_template('add_password.html')
 
 # Page to edit application login pairs
-@app.route('/pass_list/<int:login_id>/edit', methods=('GET', 'POST'))
+@app.route('/dashboard/<int:login_id>/edit', methods=('GET', 'POST'))
 def edit(login_id):
 
     # Retrives information for a application login pair
@@ -275,7 +275,7 @@ def edit(login_id):
             conn.close()
  
             # Redirects to password list after adding a new login
-            return redirect(url_for('pass_list'))
+            return redirect(url_for('dashboard'))
 
     # Verifies logged in user to prevent directory browsing
     if login['user_id'] == session['id']:
@@ -284,7 +284,7 @@ def edit(login_id):
         abort(404)
 
 # Button to delete login pairs
-@app.route('/pass_list/<int:login_id>/delete', methods=('POST',))
+@app.route('/dashboard/<int:login_id>/delete', methods=('POST',))
 def delete(login_id):
 
     # Retrives information for a application login pair
@@ -301,4 +301,4 @@ def delete(login_id):
     flash('"{}" was successfully deleted!'.format(login['application']))
 
     # Redirects to password list after deletion
-    return redirect(url_for('pass_list'))
+    return redirect(url_for('dashboard'))

@@ -1,6 +1,90 @@
 {% extends 'logged_base.html' %}
 
+{% block title %} {{ login['application'] }} - Password Details {% endblock %}
+
 {% block content %}
-    <h2>{% block title %} {{ login['application'] }} {% endblock %}</h2>
-    <span class="badge badge-secondary">{{ login['pass'] }}</span>
+    <div class="max-w-xl mx-auto p-8 bg-gray-800 rounded-lg shadow-xl border border-gray-700 text-center">
+        <h2 class="text-4xl font-extrabold text-blue-400 mb-6 break-words">
+            {{ login['application'] }}
+        </h2>
+
+        <div class="mb-6">
+            <label class="block text-gray-300 text-sm font-medium mb-2" for="passwordTextDisplay">Your Password:</label>
+            {# This div acts as the container for password text and the icon #}
+            <div class="w-full p-4 bg-gray-700 rounded-md flex items-center justify-between">
+                <span id="passwordTextDisplay" class="text-gray-100 font-mono text-2xl break-all flex-grow">
+                    {{ login['pass'] }}
+                </span>
+                {# Clipboard Icon - Clickable #}
+                <svg onclick="copyPassword()"
+                     class="w-7 h-7 text-blue-400 hover:text-blue-300 cursor-pointer ml-4 flex-shrink-0 transition-colors duration-200"
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+            </div>
+        </div>
+
+        {# The "Back to List" button remains for navigation #}
+        <a href="{{ url_for('dashboard') }}"
+           class="mt-4 w-full bg-gray-700 hover:bg-gray-600 text-blue-400 font-semibold py-3 px-4 rounded-md inline-block
+                  transition-colors duration-200 border border-blue-500 hover:border-blue-400
+                  focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800">
+            Back to List
+        </a>
+    </div>
+
+    {# JavaScript for copying to clipboard - updated to target the correct ID #}
+    <script>
+        function copyPassword() {
+            // Target the span that contains only the password text
+            const passwordElement = document.getElementById('passwordTextDisplay');
+            const passwordText = passwordElement.innerText || passwordElement.textContent;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(passwordText)
+                    .then(() => {
+                        // Optional: Provide visual feedback
+                        const originalText = passwordElement.innerText;
+                        passwordElement.innerText = 'Copied!';
+                        setTimeout(() => {
+                            passwordElement.innerText = originalText;
+                        }, 1500);
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy text using clipboard API:', err);
+                        fallbackCopyTextToClipboard(passwordText);
+                    });
+            } else {
+                fallbackCopyTextToClipboard(passwordText);
+            }
+        }
+
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.opacity = "0";
+
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                document.execCommand('copy');
+                const passwordElement = document.getElementById('passwordTextDisplay');
+                const originalText = passwordElement.innerText;
+                passwordElement.innerText = 'Copied!';
+                setTimeout(() => {
+                    passwordElement.innerText = originalText;
+                }, 1500);
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+                alert('Could not copy password. Please select and copy manually.');
+            }
+
+            document.body.removeChild(textArea);
+        }
+    </script>
 {% endblock %}
