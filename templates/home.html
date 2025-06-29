@@ -1,5 +1,46 @@
 {% extends 'base.html' %}
 
+{% block title %}Welcome to Password Locker{% endblock %}
+
 {% block content %}
-    <h1>{% block title %} Welcome to Password Locker {% endblock %}</h1>
+<div class="text-center py-12 px-6">
+    <h2 class="text-5xl font-extrabold text-blue-400 mb-6 leading-tight">🔐 Password Locker</h2>
+
+    <p class="text-xl text-gray-300 max-w-3xl mx-auto mb-16">
+        Password Locker is a secure, Python-based password manager web application built with Flask.
+        It stores user credentials with several safeguards to protect users and their data.
+    </p>
+
+    {# Grid Container for Key Features and Why Use sections #}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-6xl mx-auto text-left">
+
+        {# Column 1: Key Features #}
+        <div>
+            <h3 class="text-3xl font-bold text-gray-100 mb-6 text-center md:text-left">⚙️ Key Features</h3>
+            <ul class="text-lg text-gray-300 space-y-4">
+                <li class="flex items-start">
+                    <svg class="w-6 h-6 text-blue-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span><strong class="text-gray-100">Database Encryption:</strong> All stored passwords are encrypted to prevent unauthorized access, even if the database is compromised.</span>
+                </li>
+                <li class="flex items-start">
+                    <svg class="w-6 h-6 text-blue-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v3h8z"></path></svg>
+                    <span><strong class="text-gray-100">Two-Factor Authentication:</strong> Provides additional login protection to ensure only authorized users can access their passwords.</span>
+                </li>
+                <li class="flex items-start">
+                    <svg class="w-6 h-6 text-blue-500 mr-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2v5a2 2 0 01-2 2H9a2 2 0 01-2-2V9a2 2 0 012-2h6z"></path></svg>
+                    <span><strong class="text-gray-100">Session Cookies:</strong> Utilizes a session ID to prevent directory browse and session hijacking.</span>
+                </li>
+            </ul>
+        </div>
+
+        {# Column 2: Why Use Password Locker? #}
+        <div>
+            <h3 class="text-3xl font-bold text-gray-100 mb-6 text-center md:text-left">🔒 Why Use Password Locker?</h3>
+            <p class="text-xl text-gray-300">
+                Most commercial password managers are attractive targets for hackers as they may not internal security measures like encryption.
+                Password Locker prioritizes security, privacy, and data integrity to protects all its users from cyber threats.
+            </p>
+        </div>
+    </div>
+</div>
 {% endblock %}

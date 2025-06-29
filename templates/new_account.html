@@ -1,30 +1,45 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>{% block title %} Create a New Local Lock Account {% endblock %}</h1>
+<h1 class="text-3xl font-bold text-blue-400 mb-6">{% block title %} Create a New Local Lock Account {% endblock %}</h1>
 
-<form method="post">
-    <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" name="username"
-               placeholder="Enter Username" class="form-control"
-               value="{{ request.form['user'] }}"></input>
+<form method="post" class="space-y-6">
+    <div>
+        <label for="username" class="block text-gray-300 text-sm font-medium mb-2">Username</label>
+        <input type="text" name="username" id="username"
+               placeholder="Enter Username"
+               class="w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-gray-100 placeholder-gray-400
+                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
+               value="{{ request.form['username'] if request.form['username'] else '' }}">
     </div>
 
-    <div class="form-group">
-        <label for="password">Password</label>
-        <textarea name="password" placeholder="Enter Password"
-                  class="form-control">{{ request.form['password'] }}</textarea>
+    <div>
+        <label for="password" class="block text-gray-300 text-sm font-medium mb-2">Password</label>
+        <!--
+            Note: While a textarea is used here as per the original template,
+            it's generally recommended to use <input type="password"> for password fields
+            for better security (obfuscation) and user experience.
+        -->
+        <textarea name="password" id="password"
+                  placeholder="Enter Password"
+                  class="w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-gray-100 placeholder-gray-400
+                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 resize-y min-h-[50px]">{{ request.form['password'] if request.form['password'] else '' }}</textarea>
     </div>
 
-    <div class="form-group">
-        <label for="email">Email</label>
-        <textarea name="email" placeholder="Enter Email"
-                  class="form-control">{{ request.form['email'] }}</textarea>
+    <div>
+        <label for="email" class="block text-gray-300 text-sm font-medium mb-2">Email</label>
+        <textarea name="email" id="email"
+                  placeholder="Enter Email"
+                  class="w-full p-3 bg-gray-700 border border-gray-600 rounded-md text-gray-100 placeholder-gray-400
+                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 resize-y min-h-[50px]">{{ request.form['email'] if request.form['email'] else '' }}</textarea>
     </div>
 
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary">Submit</button>
+    <div class="pt-2">
+        <button type="submit"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-md
+                       transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800">
+            Submit
+        </button>
     </div>
 </form>
 {% endblock %}
